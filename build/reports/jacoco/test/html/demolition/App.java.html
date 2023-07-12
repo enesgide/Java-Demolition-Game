@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import java.io.*;
+import processing.core.PApplet;
+
+public class App extends PApplet {
+
+    public static final int WIDTH = 480;
+    public static final int HEIGHT = 480;
+    public static final int FPS = 60;
+
+<span class="fc" id="L13">    private boolean canPress = true;</span>
+
+    private String config;
+    private Manager manager;
+    private Background map;
+    private Timer timer;
+    private Lives lives;
+    private Player player;
+    private List&lt;RedEnemy&gt; redEnemies;
+    private List&lt;YellowEnemy&gt; yellowEnemies;
+    private List&lt;Bomb&gt; bombs;
+    private List&lt;Explosion&gt; explosions;
+    private EndScreen endScreen;
+
+    /**
+    * Creates a new App object.
+    */
+<span class="fc" id="L30">    public App() {}</span>
+
+    /**
+    * Sets the width and height of the app window.
+    */
+    public void settings() {
+<span class="fc" id="L36">        size(WIDTH, HEIGHT);</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+    * Loads in all the sprites and sets up the attibutes of the app object.
+    */
+    public void setup() {
+<span class="fc" id="L43">        frameRate(FPS);</span>
+
+<span class="fc" id="L45">        this.manager = new Manager();</span>
+<span class="fc" id="L46">        this.manager.setLevelInfo(this.config);</span>
+<span class="fc" id="L47">        this.manager.setupFont(this);</span>
+<span class="fc" id="L48">        this.manager.setupMapSprites(this);</span>
+<span class="fc" id="L49">        this.manager.setupTopbarSprites(this);</span>
+<span class="fc" id="L50">        this.manager.setupCharacterSprites(this);</span>
+<span class="fc" id="L51">        this.manager.setupExplosionSprites(this);</span>
+<span class="fc" id="L52">        this.manager.setupBombSprites(this);        </span>
+   
+<span class="fc" id="L54">        this.map = new Background(Manager.path, 1);</span>
+<span class="fc" id="L55">        this.timer = new Timer(Manager.time, 256, 16, 298, 42);</span>
+<span class="fc" id="L56">        this.lives = new Lives(128, 16, 170, 42);</span>
+<span class="fc" id="L57">        this.endScreen = new EndScreen();</span>
+<span class="fc" id="L58">        this.map.setup(this);</span>
+
+<span class="fc" id="L60">        Position playerStartPos = Background.getPlayerStartingPosition();</span>
+<span class="fc" id="L61">        this.player = new Player(playerStartPos.getX(), playerStartPos.getY(), Manager.playerLevel, Manager.playerLives);           </span>
+<span class="fc" id="L62">        this.redEnemies = this.manager.getRedEnemies();</span>
+<span class="fc" id="L63">        this.yellowEnemies = this.manager.getYellowEnemies();            </span>
+<span class="fc" id="L64">        this.bombs = new ArrayList&lt;Bomb&gt;();</span>
+<span class="fc" id="L65">        this.explosions = new ArrayList&lt;Explosion&gt;();         </span>
+<span class="fc" id="L66">    }</span>
+
+    /**
+    * Loops once every frame to call the tick() and draw() methods of all the other classes.
+    */
+    public void draw() {
+<span class="fc" id="L72">        background(255, 150, 0);</span>
+
+        // Logic
+<span class="fc bfc" id="L75" title="All 4 branches covered.">        if (this.timer.tick() || this.lives.tick(this.player)) {</span>
+<span class="fc" id="L76">            this.endScreen.setLoss(true);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        } else if (this.player.tick(this.map, this.timer)) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (this.player.getLevel() &gt; Manager.levelPaths.size()) {</span>
+<span class="fc" id="L79">                this.endScreen.setVictory(true); </span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            } else if (this.player.getLevel() &gt; this.map.getLevel()) {</span>
+<span class="fc" id="L81">                this.manager.levelUpReset(this, this.map, this.timer, this.player);</span>
+<span class="fc" id="L82">                this.reset();</span>
+            }            
+        }
+
+<span class="pc bpc" id="L86" title="2 of 6 branches missed.">        if (this.map.getReset() &amp;&amp; !(this.endScreen.getVictory() || this.endScreen.getLoss())){</span>
+<span class="fc" id="L87">            this.manager.gameEndedReset(this, this.map);</span>
+<span class="fc" id="L88">            this.reset();</span>
+        }
+
+<span class="fc" id="L91">        this.manager.handleDangerTicks(this.redEnemies, this.yellowEnemies, this.bombs, this.explosions);</span>
+
+        // Graphics
+<span class="fc" id="L94">        this.fill(255,150,0);</span>
+<span class="fc" id="L95">        this.rect(-1, -1, WIDTH + 2, HEIGHT + 2);</span>
+
+<span class="fc bfc" id="L97" title="All 4 branches covered.">        if (this.endScreen.getVictory() || this.endScreen.getLoss()) {</span>
+<span class="fc" id="L98">            this.endScreen.draw(this);</span>
+        } else {
+<span class="fc" id="L100">            this.map.draw(this);</span>
+<span class="fc" id="L101">            this.timer.draw(this);</span>
+<span class="fc" id="L102">            this.lives.draw(this);  </span>
+<span class="fc" id="L103">            this.manager.handleLayerDrawings(this, this.player, this.redEnemies, this.yellowEnemies, this.bombs, this.explosions); </span>
+        }    
+<span class="fc" id="L105">    }</span>
+
+    /**
+    * Event fired when a key is pressed and sets the boolean canPress to false.&amp;nbsp;Determines which key is pressed and either drops the bomb or moves the player based on the key pressed.
+    */
+    public void keyPressed() {
+<span class="fc" id="L111">        List&lt;String&gt; keys = Arrays.asList(new String[]{&quot;LEFT&quot;, &quot;UP&quot;, &quot;RIGHT&quot;, &quot;DOWN&quot;});</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (canPress) {</span>
+<span class="fc" id="L113">            canPress = false;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (keyCode == 32) {</span>
+<span class="fc" id="L115">                this.bombs.add(new Bomb(this.player.getX(), this.player.getY()));</span>
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">            } else if (37 &lt;= keyCode &amp;&amp; keyCode &lt;= 40) {</span>
+<span class="fc" id="L117">                this.player.move(keys.get(keyCode - 37));</span>
+            }
+        }  
+<span class="fc" id="L120">    }</span>
+
+    /**
+    * Event fired when a key is released.&amp;nbsp;Sets the boolean canPress to true so that keyPressed can be used again.
+    */
+    public void keyReleased() {
+<span class="fc" id="L126">        canPress = true;</span>
+<span class="fc" id="L127">    }</span>
+
+    /**
+    * Sets the config filepath used when setting up the map.
+    * @param filepath The path of the json file which holds the level data.
+    */
+    public void setConfig(String filepath) {
+<span class="fc" id="L134">        this.config = filepath;</span>
+<span class="fc" id="L135">    }</span>
+
+    /**
+    * Gets the player object.
+    * @return The player attribute of the app.
+    */
+    public Player getPlayer() {
+<span class="fc" id="L142">        return this.player;</span>
+    }
+
+    /**
+    * Gets the endScreen object.
+    * @return The endScreen attribute of the app.
+    */
+    public EndScreen getEndScreen() {
+<span class="fc" id="L150">        return this.endScreen;</span>
+    }
+
+    /**
+    * Resets the position of all game characters (player, red and yellow enemies), and removes all bombs and explosions from the map.
+    */
+    public void reset() {
+<span class="fc" id="L157">        this.player.reset();</span>
+<span class="fc" id="L158">        this.redEnemies = this.manager.getRedEnemies();   </span>
+<span class="fc" id="L159">        this.yellowEnemies = this.manager.getYellowEnemies();    </span>
+<span class="fc" id="L160">        this.bombs = new ArrayList&lt;Bomb&gt;();</span>
+<span class="fc" id="L161">        this.explosions = new ArrayList&lt;Explosion&gt;();        </span>
+<span class="fc" id="L162">    }</span>
+
+    /**
+    * Runs the program.
+    * @param args Command line input.
+    */
+    public static void main(String[] args) {
+<span class="nc" id="L169">        PApplet.main(&quot;demolition.App&quot;);</span>
+<span class="nc" id="L170">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

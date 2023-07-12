@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Explosion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Explosion.java</span></div><h1>Explosion.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+
+public class Explosion{
+
+<span class="fc" id="L9">	private int frameInterval = 1;</span>
+
+	private int x;
+	private int y;
+	private List&lt;PImage&gt; sprites;
+	private List&lt;Position&gt; positions;
+	
+	/**
+    * Creates a new Explosion object.
+    * @param x X coordinate
+    * @param y Y coordinate
+    */
+<span class="fc" id="L21">	public Explosion(int x, int y) {</span>
+<span class="fc" id="L22">		this.x = x;</span>
+<span class="fc" id="L23">		this.y = y;</span>
+<span class="fc" id="L24">		this.sprites = Manager.explosionSprites;</span>
+<span class="fc" id="L25">		this.positions = new ArrayList&lt;Position&gt;();</span>
+<span class="fc" id="L26">	}</span>
+
+	/**
+    * On the first method call, it adds the appropriate horizontal and vertical explosion positions to the ArrayList and returns null.&amp;nbsp;After 0.5 seconds, return the object's positions list. 
+    * @return Returns the object's positions list after 0.5 seconds (30 frames), otherwise null.
+    */
+	public List&lt;Position&gt; tick() {	
+		// Movement
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		if (frameInterval == 1) {</span>
+<span class="fc" id="L35">			List&lt;Integer&gt; increments = Arrays.asList(new Integer[]{32, 64});</span>
+<span class="fc" id="L36">			Background.addExplosionPosition(this.x, this.y);</span>
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">			for (int i = 0; i &lt; 4; i++) {</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">				for (int j = 0; j &lt; increments.size(); j++) {</span>
+
+<span class="fc" id="L41">					int sign = 1;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">					if (i % 2 != 0) {</span>
+<span class="fc" id="L43">						sign = sign * -1;</span>
+					}
+
+
+					Position pos;
+<span class="fc bfc" id="L48" title="All 2 branches covered.">					if (i &lt; 2) {</span>
+<span class="fc" id="L49">						pos = new Position(this.x + increments.get(j) * sign, this.y);</span>
+					} else {
+<span class="fc" id="L51">						pos = new Position(this.x, this.y + increments.get(j) * sign);</span>
+					}
+
+<span class="fc" id="L54">					int result = checkCollisions(pos);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">					if (result &gt;= 0) {</span>
+<span class="fc" id="L56">						this.positions.add(pos);</span>
+<span class="fc" id="L57">						Background.addExplosionPosition(pos.getX(), pos.getY());						</span>
+					}
+<span class="fc bfc" id="L59" title="All 2 branches covered.">					if (result &lt;= 0) {</span>
+<span class="fc" id="L60">						break;</span>
+					}
+				}
+			}
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		} else if (frameInterval == 30) {</span>
+<span class="fc" id="L66">			return this.positions;</span>
+		}
+
+<span class="fc" id="L69">		this.incrementFrame();</span>
+
+<span class="fc" id="L71">		return null;</span>
+	}
+
+	/**
+    * Draws the explosions to the application window.
+    * @param app PApplet app object.
+    */
+	public void draw(PApplet app) {	
+<span class="fc" id="L79">		app.image(this.sprites.get(0), this.x, this.y);	</span>
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (Position pos : this.positions) {</span>
+<span class="fc bfc" id="L82" title="All 4 branches covered.">			if (pos.getX() == this.x + 32 || pos.getX() == this.x - 32) {</span>
+<span class="fc" id="L83">				app.image(this.sprites.get(1), pos.getX(), pos.getY());	</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			} else if (pos.getX() == this.x + 64) {</span>
+<span class="fc" id="L85">				app.image(this.sprites.get(4), pos.getX(), pos.getY());	</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			} else if (pos.getX() == this.x - 64) {</span>
+<span class="fc" id="L87">				app.image(this.sprites.get(3), pos.getX(), pos.getY());	</span>
+<span class="fc bfc" id="L88" title="All 4 branches covered.">			} else if (pos.getY() == this.y + 32 || pos.getY() == this.y - 32) {</span>
+<span class="fc" id="L89">				app.image(this.sprites.get(2), pos.getX(), pos.getY());	</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			} else if (pos.getY() == this.y + 64) {</span>
+<span class="fc" id="L91">				app.image(this.sprites.get(6), pos.getX(), pos.getY());	</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">			} else if (pos.getY() == this.y - 64) {</span>
+<span class="fc" id="L93">				app.image(this.sprites.get(5), pos.getX(), pos.getY());	</span>
+			}
+<span class="fc" id="L95">		}</span>
+		
+<span class="fc" id="L97">	}</span>
+
+	/**
+    * Checks the received position for colliding solid wall and broken wall tiles.
+    * @param pos Position to check.
+    * @return If a wall tile is found, return -1.&amp;nbsp;If a broken tile is found, return 0.&amp;nbsp;Otherwise, return 1.
+    */
+	public int checkCollisions(Position pos) {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (Position checkPos : Background.getWallPositions()) {</span>
+<span class="fc bfc" id="L106" title="All 4 branches covered.">			if (pos.getX() == checkPos.getX() &amp;&amp; pos.getY() == checkPos.getY()) {</span>
+<span class="fc" id="L107">				return -1;</span>
+			}
+<span class="fc" id="L109">		}</span>
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (Position checkPos : Background.getBrokenPositions()) {</span>
+<span class="fc bfc" id="L112" title="All 4 branches covered.">			if (pos.getX() == checkPos.getX() &amp;&amp; pos.getY() == checkPos.getY()) {</span>
+<span class="fc" id="L113">				Background.removeBrokenPosition(checkPos.getX(), checkPos.getY());</span>
+<span class="fc" id="L114">				return 0;</span>
+			}
+<span class="fc" id="L116">		}</span>
+
+<span class="fc" id="L118">		return 1;</span>
+	}
+
+	/**
+    * Increment frameInterval and return its new value.
+    * @return The new value of frameInterval.
+    */
+	public int incrementFrame() {
+<span class="fc" id="L126">		frameInterval ++;</span>
+<span class="fc" id="L127">		return frameInterval;</span>
+	}
+
+	/**
+    * Get the x coordinate of the explosion centre.
+    * @return The x coordinate.
+    */
+	public int getCentreX() {
+<span class="fc" id="L135">		return this.x;</span>
+	}
+
+	/**
+    * Get the y coordinate of the explosion centre.
+    * @return The y coordinate.
+    */
+	public int getCentreY() {
+<span class="fc" id="L143">		return this.y;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="demolition.BackgroundTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2021-11-05T07:55:00" hostname="DESKTOP-08SSRQM" time="0.005">
+  <properties/>
+  <testcase name="manipulateTilePositions()" classname="demolition.BackgroundTest" time="0.001"/>
+  <testcase name="levelTest()" classname="demolition.BackgroundTest" time="0.0"/>
+  <testcase name="manipulateExplosionPositionsTest()" classname="demolition.BackgroundTest" time="0.001"/>
+  <testcase name="manipulateRedPositionsTest()" classname="demolition.BackgroundTest" time="0.0"/>
+  <testcase name="manipulateYellowPositionsTest()" classname="demolition.BackgroundTest" time="0.001"/>
+  <testcase name="resetTest()" classname="demolition.BackgroundTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

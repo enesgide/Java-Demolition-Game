@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Background.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Background.java</span></div><h1>Background.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import java.io.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.core.PFont;
+
+public class Background{	
+<span class="fc" id="L10">	public static List&lt;Position&gt; emptyPositions = new ArrayList&lt;Position&gt;();</span>
+<span class="fc" id="L11">	public static List&lt;Position&gt; wallPositions = new ArrayList&lt;Position&gt;();</span>
+<span class="fc" id="L12">	public static List&lt;Position&gt; brokenPositions = new ArrayList&lt;Position&gt;();</span>
+
+<span class="fc" id="L14">	public static List&lt;Position&gt; redPositions = new ArrayList&lt;Position&gt;();</span>
+<span class="fc" id="L15">	public static List&lt;Position&gt; yellowPositions = new ArrayList&lt;Position&gt;();</span>
+
+<span class="fc" id="L17">	public static List&lt;Position&gt; explosionPositions = new ArrayList&lt;Position&gt;();</span>
+
+	public static Position goalPos;
+	public static Position plrStartPos;
+
+	private String mapFile;
+	private int level;
+	private boolean reset;
+	private PFont font;
+	private PImage lives;
+	private PImage empty;
+	private PImage broken;
+	private PImage goal;
+	private PImage wall;
+
+	/**
+    * Creates a new App object.
+    * @param mapFile Path of the file containing the map data.
+    * @param level Level of the current map.
+    */
+<span class="fc" id="L37">	public Background(String mapFile, int level) {	</span>
+<span class="fc" id="L38">		this.mapFile = mapFile;</span>
+<span class="fc" id="L39">		this.level = level;	</span>
+<span class="fc" id="L40">		this.reset = false;</span>
+		
+<span class="fc" id="L42">		this.font = Manager.font;</span>
+<span class="fc" id="L43">		this.empty = Manager.emptyTile;</span>
+<span class="fc" id="L44">		this.broken = Manager.brokenTile;</span>
+<span class="fc" id="L45">		this.goal = Manager.goalTile;</span>
+<span class="fc" id="L46">		this.wall = Manager.wallTile;	</span>
+<span class="fc" id="L47">	}</span>
+
+	/**
+    * Loads in a new map, or overrides any old maps based on the mapFile of the Background object.
+    * @param app PApplet app object.
+    */
+	public void setup(PApplet app) {
+
+<span class="fc" id="L55">		int scale = 32;</span>
+<span class="fc" id="L56">		int x = 0;</span>
+<span class="fc" id="L57">		int y = 2 * scale;</span>
+
+		try {
+<span class="fc" id="L60">			File f = new File(this.mapFile);</span>
+<span class="fc" id="L61">			Scanner reader = new Scanner(f);</span>
+<span class="fc" id="L62">			List&lt;Character&gt; chars = Arrays.asList(new Character[]{' ', 'B', 'G', 'W'});</span>
+
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			while (reader.hasNextLine()) {</span>
+<span class="fc" id="L65">				String line = reader.nextLine();</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				for (int i = 0; i &lt; line.length(); i++) {</span>
+<span class="fc" id="L68">					Character c = line.charAt(i);</span>
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">					if (c == 'B') {</span>
+<span class="fc" id="L71">						Position newPos = new Position(x, y);</span>
+<span class="fc" id="L72">						brokenPositions.add(newPos);</span>
+<span class="fc" id="L73">						PImage img = app.loadImage(&quot;src/main/resources/broken/broken.png&quot;);</span>
+<span class="fc" id="L74">						app.image(img, x, y);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">					} else if (c == 'G') {</span>
+<span class="fc" id="L76">						goalPos = new Position(x, y);</span>
+<span class="fc" id="L77">						app.image(this.goal, x, y);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">					} else if (c == 'W') {</span>
+<span class="fc" id="L79">						Position newPos = new Position(x, y);</span>
+<span class="fc" id="L80">						wallPositions.add(newPos);</span>
+<span class="fc" id="L81">						PImage img = app.loadImage(&quot;src/main/resources/wall/solid.png&quot;);</span>
+<span class="fc" id="L82">						app.image(img, x, y);</span>
+<span class="fc" id="L83">					} else {</span>
+<span class="fc" id="L84">						Position newPos = new Position(x, y);</span>
+<span class="fc" id="L85">						emptyPositions.add(newPos);</span>
+<span class="fc" id="L86">						app.image(this.empty, x, y);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">						if (c == 'P') {</span>
+<span class="fc" id="L88">							plrStartPos = new Position(x, y);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">						} else if (c == 'R') {</span>
+<span class="fc" id="L90">							Position enemyPos = new Position(x, y);</span>
+<span class="fc" id="L91">							redPositions.add(enemyPos);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">						} else if (c == 'Y') {</span>
+<span class="fc" id="L93">							Position enemyPos = new Position(x, y);</span>
+<span class="fc" id="L94">							yellowPositions.add(enemyPos);</span>
+						}
+					}
+
+<span class="fc" id="L98">					x += scale;</span>
+		        }
+
+<span class="fc" id="L101">		        x = 0;</span>
+<span class="fc" id="L102">		        y += scale;</span>
+<span class="fc" id="L103">			}</span>
+
+<span class="fc" id="L105">			reader.close();</span>
+
+<span class="nc" id="L107">		} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L108">			System.out.println(&quot;FileNotFound when setting up the map&quot;);</span>
+<span class="fc" id="L109">		}</span>
+
+<span class="fc" id="L111">	}</span>
+
+	/**
+    * Draws in the map components into the application window.
+    * @param app PApplet app object.
+    */
+	public void draw(PApplet app) {
+
+<span class="fc bfc" id="L119" title="All 2 branches covered.">		for (Position pos : emptyPositions) {</span>
+<span class="fc" id="L120">			app.image(this.empty, pos.getX(), pos.getY());</span>
+<span class="fc" id="L121">		}</span>
+
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (Position pos : wallPositions) {</span>
+<span class="fc" id="L124">			app.image(this.wall, pos.getX(), pos.getY());</span>
+<span class="fc" id="L125">		}</span>
+
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (Position pos : brokenPositions) {</span>
+<span class="fc" id="L128">			app.image(this.broken, pos.getX(), pos.getY());</span>
+<span class="fc" id="L129">		}</span>
+
+<span class="fc" id="L131">		app.image(this.goal, goalPos.getX(), goalPos.getY());</span>
+<span class="fc" id="L132">	}</span>
+
+	/**
+    * Sets the reset attribute to either true or false.
+    * @param status The boolean value to change reset to.
+    */
+	public void setReset(boolean status) {
+<span class="fc" id="L139">        this.reset = status;</span>
+<span class="fc" id="L140">    }</span>
+
+    /**
+    * Gets the reset value.
+    * @return The value of reset.
+    */
+    public boolean getReset() {
+<span class="fc" id="L147">        return this.reset;</span>
+    }
+
+    /**
+    * Increments the level value and updates the mapFile to correspond with the new level.
+    */
+	public void changeLevel() {
+<span class="fc" id="L154">		this.level += 1;</span>
+<span class="fc" id="L155">		this.mapFile = Manager.levelPaths.get(this.level-1);</span>
+<span class="fc" id="L156">	}</span>
+
+	/**
+    * Gets the current map's level.
+    * @return The current level.
+    */
+	public int getLevel() {
+<span class="fc" id="L163">		return this.level;</span>
+	}
+
+	/**
+    * Static method which clears all array lists and static variables stored in Background.java to clear old map data.
+    */
+	public static void reset() {
+<span class="fc" id="L170">		emptyPositions.clear();</span>
+<span class="fc" id="L171">		wallPositions.clear();</span>
+<span class="fc" id="L172">		brokenPositions.clear();</span>
+<span class="fc" id="L173">		redPositions.clear();</span>
+<span class="fc" id="L174">		yellowPositions.clear();</span>
+<span class="fc" id="L175">		explosionPositions.clear();</span>
+<span class="fc" id="L176">		goalPos = null;</span>
+<span class="fc" id="L177">		plrStartPos = null;</span>
+<span class="fc" id="L178">	}</span>
+
+	/**
+    * Static method which returns the player's starting position.
+    * @return The player's starting position.
+    */
+	public static Position getPlayerStartingPosition() {
+<span class="fc" id="L185">		return plrStartPos;</span>
+	}
+
+	/**
+    * Static method which returns the goal tile's position.
+    * @return The goal position.
+    */
+	public static Position getGoalPosition() {
+<span class="fc" id="L193">		return goalPos;</span>
+	}
+
+	/**
+    * Static method which returns the positions for empty tiles.
+    * @return List of positions for empty tiles.
+    */
+	public static List&lt;Position&gt; getEmptyPositions() {
+<span class="fc" id="L201">		return emptyPositions;</span>
+	}
+
+	/**
+    * Static method which returns the positions for solid wall tiles.
+    * @return List of positions for solid wall tiles.
+    */
+	public static List&lt;Position&gt; getWallPositions() {
+<span class="fc" id="L209">		return wallPositions;</span>
+	}
+
+	/**
+    * Static method which returns the positions for broken wall tiles.
+    * @return List of positions for broken wall tiles.
+    */
+	public static List&lt;Position&gt; getBrokenPositions() {
+<span class="fc" id="L217">		return brokenPositions;</span>
+	}
+
+	/**
+    * Static method which returns the positions for explosions.
+    * @return List of positions for explosions.
+    */
+	public static List&lt;Position&gt; getExplosionPositions() {
+<span class="fc" id="L225">		return explosionPositions;</span>
+	}
+
+	/**
+    * Static method which returns the positions for red enemies.
+    * @return List of positions for red enemies.
+    */
+	public static List&lt;Position&gt; getRedPositions() {
+<span class="fc" id="L233">		return redPositions;</span>
+	}
+
+	/**
+    * Static method which returns the positions for yellow enemies.
+    * @return List of positions for yellow enemies.
+    */
+	public static List&lt;Position&gt; getYellowPositions() {
+<span class="fc" id="L241">		return yellowPositions;</span>
+	}
+
+	/**
+    * Static method which adds a Position object to explosionPositions.
+    * @param newX X coordinate
+    * @param newY Y coordinate
+    */
+	public static void addExplosionPosition(int newX, int newY) {
+<span class="fc" id="L250">		Position newPos = new Position(newX, newY);</span>
+<span class="fc" id="L251">		explosionPositions.add(newPos);</span>
+<span class="fc" id="L252">	}</span>
+
+	/**
+    * Static method which adds a Position object to redPositions.
+    * @param newX X coordinate
+    * @param newY Y coordinate
+    */
+	public static void addRedPosition(int newX, int newY) {
+<span class="fc" id="L260">		Position newPos = new Position(newX, newY);</span>
+<span class="fc" id="L261">		redPositions.add(newPos);</span>
+<span class="fc" id="L262">	}</span>
+
+	/**
+    * Static method which adds a Position object to yellowPositions.
+    * @param newX X coordinate
+    * @param newY Y coordinate
+    */
+	public static void addYellowPosition(int newX, int newY) {
+<span class="fc" id="L270">		Position newPos = new Position(newX, newY);</span>
+<span class="fc" id="L271">		yellowPositions.add(newPos);</span>
+<span class="fc" id="L272">	}</span>
+
+	/**
+    * Static method which removes a position from brokenPositions.
+    * @param oldX X coordinate
+    * @param oldY Y coordinate
+    */
+	public static void removeBrokenPosition(int oldX, int oldY) {
+<span class="fc bfc" id="L280" title="All 2 branches covered.">		for (Position oldPos : brokenPositions) {</span>
+<span class="fc bfc" id="L281" title="All 4 branches covered.">			if (oldPos.getX() == oldX &amp;&amp; oldPos.getY() == oldY) {</span>
+<span class="fc" id="L282">				brokenPositions.remove(oldPos);</span>
+<span class="fc" id="L283">				emptyPositions.add(oldPos);</span>
+<span class="fc" id="L284">				break;</span>
+			}
+<span class="fc" id="L286">		}</span>
+<span class="fc" id="L287">	}</span>
+
+	/**
+    * Static method which removes a position from explosionPositions.
+    * @param oldX X coordinate
+    * @param oldY Y coordinate
+    */
+	public static void removeExplosionPosition(int oldX, int oldY) {
+<span class="fc bfc" id="L295" title="All 2 branches covered.">		for (Position oldPos : explosionPositions) {</span>
+<span class="fc bfc" id="L296" title="All 4 branches covered.">			if (oldPos.getX() == oldX &amp;&amp; oldPos.getY() == oldY) {</span>
+<span class="fc" id="L297">				explosionPositions.remove(oldPos);</span>
+<span class="fc" id="L298">				break;</span>
+			}
+<span class="fc" id="L300">		}</span>
+<span class="fc" id="L301">	}</span>
+
+	/**
+    * Static method which removes a position from redPositions.
+    * @param oldX X coordinate
+    * @param oldY Y coordinate
+    */
+	public static void removeRedPosition(int oldX, int oldY) {
+<span class="fc bfc" id="L309" title="All 2 branches covered.">		for (Position oldPos : redPositions) {</span>
+<span class="fc bfc" id="L310" title="All 4 branches covered.">			if (oldPos.getX() == oldX &amp;&amp; oldPos.getY() == oldY) {</span>
+<span class="fc" id="L311">				redPositions.remove(oldPos);</span>
+<span class="fc" id="L312">				break;</span>
+			}
+<span class="fc" id="L314">		}</span>
+<span class="fc" id="L315">	}</span>
+
+	/**
+    * Static method which removes a position from yellowPositions.
+    * @param oldX X coordinate
+    * @param oldY Y coordinate
+    */
+	public static void removeYellowPosition(int oldX, int oldY) {
+<span class="fc bfc" id="L323" title="All 2 branches covered.">		for (Position oldPos : yellowPositions) {</span>
+<span class="fc bfc" id="L324" title="All 4 branches covered.">			if (oldPos.getX() == oldX &amp;&amp; oldPos.getY() == oldY) {</span>
+<span class="fc" id="L325">				yellowPositions.remove(oldPos);</span>
+<span class="fc" id="L326">				break;</span>
+			}
+<span class="fc" id="L328">		}</span>
+<span class="fc" id="L329">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

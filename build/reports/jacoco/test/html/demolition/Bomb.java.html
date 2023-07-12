@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bomb.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Bomb.java</span></div><h1>Bomb.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+
+public class Bomb{
+
+<span class="fc" id="L9">	private int frameInterval = 1;</span>
+
+	private int x;
+	private int y;
+	private PImage sprite;
+	private List&lt;PImage&gt; sprites;
+	
+	/**
+    * Creates a new Bomb object.
+    * @param x X coordinate
+    * @param y Y coordinate
+    */
+<span class="fc" id="L21">	public Bomb(int x, int y) {</span>
+<span class="fc" id="L22">		this.x = x;</span>
+<span class="fc" id="L23">		this.y = y;</span>
+<span class="fc" id="L24">		this.sprites = Manager.bombSprites;		</span>
+<span class="fc" id="L25">	}</span>
+
+	/**
+    * Updates the sprite value every 0.25 seconds and returns false, or returns true at 2 seconds.
+    * @return Returns if true if 2 seconds (120 frames) have passed, otherwise false.
+    */
+	public boolean tick() {		
+<span class="fc" id="L32">		boolean increment = true;</span>
+
+<span class="pc bpc" id="L34" title="1 of 4 branches missed.">		if (this.sprite == null &amp;&amp; this.sprites != null) {</span>
+<span class="fc" id="L35">			this.sprite = this.sprites.get(0);</span>
+		}
+
+		// Sprites
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (frameInterval % 15 == 0) {</span>
+<span class="fc" id="L40">			this.sprite = this.sprites.get(this.sprites.size() - (frameInterval % this.sprites.size()) - 1);					</span>
+		} 
+
+		// Movement
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (frameInterval == 120) {</span>
+<span class="fc" id="L45">			frameInterval = 1;</span>
+<span class="fc" id="L46">			increment = false;</span>
+<span class="fc" id="L47">			return true;</span>
+		}
+
+		// Reset counter
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (increment) {</span>
+<span class="fc" id="L52">			frameInterval ++;</span>
+		}
+
+<span class="fc" id="L55">		return false;</span>
+	}
+
+	/**
+    * Draws the sprite to the application window.
+    * @param app PApplet app object.
+    */
+	public void draw(PApplet app) {		
+<span class="fc" id="L63">		app.image(this.sprite, this.x, this.y);</span>
+<span class="fc" id="L64">	}</span>
+
+	/**
+    * Returns the x coordinate.
+    * @return X coordinate
+    */
+	public int getX() {
+<span class="fc" id="L71">		return this.x;</span>
+	}
+
+	/**
+    * Returns the y coordinate.
+    * @return Y coordinate
+    */
+	public int getY() {
+<span class="fc" id="L79">		return this.y;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

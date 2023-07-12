@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameCharacter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">GameCharacter.java</span></div><h1>GameCharacter.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+
+<span class="fc" id="L7">public abstract class GameCharacter{</span>
+
+<span class="fc" id="L9">	protected int frameInterval = 1;</span>
+
+	protected int x;
+	protected int y;	
+
+	protected List&lt;PImage&gt; downSprites;
+	protected List&lt;PImage&gt; upSprites;
+	protected List&lt;PImage&gt; leftSprites;
+	protected List&lt;PImage&gt; rightSprites;
+
+	protected PImage sprite;
+	protected int spriteCount;
+	protected String lastFacing;
+	protected String facing;
+
+	public abstract void draw(PApplet app);
+	
+	/**
+    * Moves the game character in the direction passed. Does not move if the next position is taken by a wall or has a negative coordinate.
+    * @param direction Direction to move (&quot;LEFT&quot;, &quot;RIGHT&quot;, &quot;UP&quot;, &quot;DOWN&quot;).
+    */
+	public void move(String direction) {
+<span class="fc" id="L31">		Position nextPos = this.getNextPosInDirection(direction);</span>
+<span class="fc" id="L32">		int nextX = nextPos.getX();</span>
+<span class="fc" id="L33">		int nextY = nextPos.getY();</span>
+
+<span class="pc bpc" id="L35" title="2 of 6 branches missed.">		if (nextX &lt; 0 || nextY &lt; 0 || checkCollisions(nextX, nextY)) {</span>
+<span class="fc" id="L36">			return;</span>
+		}
+
+<span class="fc" id="L39">		this.setLastFacing(this.getFacing());</span>
+<span class="fc" id="L40">		this.setFacing(direction);</span>
+<span class="fc" id="L41">		this.updateSprite();</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		if (nextX != this.getX()) {</span>
+<span class="fc" id="L44">			this.setX(nextX);</span>
+		}
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (nextY != this.getY()) {</span>
+<span class="fc" id="L48">			this.setY(nextY);</span>
+		}
+<span class="fc" id="L50">	}</span>
+
+	/**
+    * Sets the value of x to newX.
+    * @param newX X coordinate.
+    */
+	public void setX(int newX) {
+<span class="fc" id="L57">		this.x = newX;</span>
+<span class="fc" id="L58">	}</span>
+
+	/**
+    * Returns the value of x.
+    * @return The value of x.
+    */
+	public int getX() {
+<span class="fc" id="L65">		return this.x;</span>
+	}
+
+	/**
+    * Sets the value of y to newY.
+    * @param newY Y coordinate.
+    */
+	public void setY(int newY) {
+<span class="fc" id="L73">		this.y = newY;</span>
+<span class="fc" id="L74">	}</span>
+
+	/**
+    * Returns the value of y.
+    * @return The value of y.
+    */
+	public int getY() {
+<span class="fc" id="L81">		return this.y;</span>
+	}
+
+	/**
+    * Returns the position that the game character would be if they moved in the direction passed.
+    * @param direction The direction to move in.
+    * @return The next position.
+    */
+	public Position getNextPosInDirection(String direction) {
+<span class="fc" id="L90">		int nextX = -1;</span>
+<span class="fc" id="L91">		int nextY = -1;</span>
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (direction == &quot;LEFT&quot;) {</span>
+<span class="fc" id="L94">			nextX = this.getX() - 32;</span>
+<span class="fc" id="L95">			nextY = this.getY();</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		} else if (direction == &quot;RIGHT&quot;) {</span>
+<span class="fc" id="L97">			nextX = this.getX() + 32;</span>
+<span class="fc" id="L98">			nextY = this.getY();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		} else if (direction == &quot;UP&quot;) {</span>
+<span class="fc" id="L100">			nextX = this.getX();</span>
+<span class="fc" id="L101">			nextY = this.getY() - 32;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		} else if (direction == &quot;DOWN&quot;) {</span>
+<span class="fc" id="L103">			nextX = this.getX();</span>
+<span class="fc" id="L104">			nextY = this.getY() + 32;</span>
+		}
+
+<span class="fc" id="L107">		return new Position(nextX, nextY);</span>
+	}
+
+	/**
+    * Sets the value of facing.
+    * @param direction The direction to look.
+    */
+	public void setFacing(String direction) {
+<span class="fc" id="L115">		this.facing = direction;</span>
+<span class="fc" id="L116">	}</span>
+
+	/**
+    * Gets the value of facing.
+    * @return The direction that the game character is facing.
+    */
+	public String getFacing() {
+<span class="fc" id="L123">		return this.facing;</span>
+	}
+
+	/**
+    * Sets the value of lastFacing.
+    * @param direction The direction faced in the previous frame.
+    */
+	public void setLastFacing(String direction) {
+<span class="fc" id="L131">		this.lastFacing = direction;</span>
+<span class="fc" id="L132">	}</span>
+
+	/**
+    * Gets the value of lastFacing.
+    * @return The direction faced in the previous frame.
+    */
+	public String getLastFacing() {
+<span class="fc" id="L139">		return this.lastFacing;</span>
+	}
+
+	/**
+    * Increments the frameInterval by 1. Resets frameInterval to 1 if it is equal to 60.
+    * @return The new value of frameInterval.
+    */
+	public int incrementFrame() {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (frameInterval == 60) {</span>
+<span class="fc" id="L148">			frameInterval = 1;		</span>
+		} else {
+<span class="fc" id="L150">			frameInterval ++;</span>
+		}
+<span class="fc" id="L152">		return frameInterval;</span>
+	}
+
+	/**
+    * Changes the value of sprite based on the spriteCount, and then increments the spriteCount. If sprite is null then return.
+    */
+	public void updateSprite() {	
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		if (this.sprite == null) {</span>
+<span class="fc" id="L160">			return;		</span>
+		}
+
+<span class="fc bfc" id="L163" title="All 4 branches covered.">		if (this.getFacing() != this.getLastFacing() || this.spriteCount &gt;= 4) {</span>
+<span class="fc" id="L164">			this.spriteCount = 0;</span>
+<span class="fc" id="L165">			this.setLastFacing(this.getFacing());</span>
+		}
+
+<span class="fc bfc" id="L168" title="All 2 branches covered.">		if (this.getFacing() == &quot;LEFT&quot;) {</span>
+<span class="fc" id="L169">			this.sprite = this.leftSprites.get(this.spriteCount);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		} else if (this.getFacing() == &quot;RIGHT&quot;) {</span>
+<span class="fc" id="L171">			this.sprite = this.rightSprites.get(this.spriteCount);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		} else if (this.getFacing() == &quot;UP&quot;) {</span>
+<span class="fc" id="L173">			this.sprite = this.upSprites.get(this.spriteCount);</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">		} else if (this.getFacing() == &quot;DOWN&quot;) {</span>
+<span class="fc" id="L175">			this.sprite = this.downSprites.get(this.spriteCount);</span>
+		}
+<span class="fc" id="L177">		this.spriteCount ++;</span>
+<span class="fc" id="L178">	}</span>
+
+	/**
+    * Checks if there is a solid wall tile or broken wall tile in the position passed.
+    * @param nextX X coordinate to check
+    * @param nextY Y coordinate to check
+    * @return Whether or not a solid or broken wall tile was found.
+    */
+	public boolean checkCollisions(int nextX, int nextY) {
+<span class="fc" id="L187">		Position playerNextPos = new Position(nextX, nextY);</span>
+
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		for (Position checkPos : Background.getWallPositions()) {</span>
+<span class="fc bfc" id="L190" title="All 4 branches covered.">			if (playerNextPos.getX() == checkPos.getX() &amp;&amp; playerNextPos.getY() == checkPos.getY()) {</span>
+<span class="fc" id="L191">				return true;</span>
+			}
+<span class="fc" id="L193">		}</span>
+
+<span class="fc bfc" id="L195" title="All 2 branches covered.">		for (Position checkPos : Background.getBrokenPositions()) {</span>
+<span class="fc bfc" id="L196" title="All 4 branches covered.">			if (playerNextPos.getX() == checkPos.getX() &amp;&amp; playerNextPos.getY() == checkPos.getY()) {</span>
+<span class="fc" id="L197">				return true;</span>
+			}
+<span class="fc" id="L199">		}</span>
+
+<span class="fc" id="L201">		return false;</span>
+	}
+
+	/**
+    * Checks and returns if the game character has been hit by an explosion.
+    * @return Whether or not the game character was hit by an explosion.
+    */
+	public boolean checkExplosion() {
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		for (Position explosionPos : Background.getExplosionPositions()) {</span>
+<span class="fc bfc" id="L210" title="All 4 branches covered.">			if (explosionPos.getX() == this.x &amp;&amp; explosionPos.getY() == this.y) {</span>
+<span class="fc" id="L211">				return true;</span>
+			}
+<span class="fc" id="L213">		}</span>
+
+<span class="fc" id="L215">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

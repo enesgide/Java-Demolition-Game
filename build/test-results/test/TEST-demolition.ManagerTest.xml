@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="demolition.ManagerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2021-11-05T07:55:00" hostname="DESKTOP-08SSRQM" time="6.201">
+  <properties/>
+  <testcase name="explosionSpritesTest()" classname="demolition.ManagerTest" time="1.022"/>
+  <testcase name="characterSpritesTest()" classname="demolition.ManagerTest" time="1.078"/>
+  <testcase name="fontTest()" classname="demolition.ManagerTest" time="1.026"/>
+  <testcase name="levelInfoTest()" classname="demolition.ManagerTest" time="0.004"/>
+  <testcase name="bombSpritesTest()" classname="demolition.ManagerTest" time="1.021"/>
+  <testcase name="mapSpritesTest()" classname="demolition.ManagerTest" time="1.026"/>
+  <testcase name="topbarSpritesTest()" classname="demolition.ManagerTest" time="1.022"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

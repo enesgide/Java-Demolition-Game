@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Manager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Manager.java</span></div><h1>Manager.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import java.io.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.core.PFont;
+import processing.data.JSONObject;
+import processing.data.JSONArray;
+
+<span class="fc" id="L11">public class Manager extends App{</span>
+
+    // Level info
+<span class="fc" id="L14">    public static List&lt;String&gt; levelPaths = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L15">    public static List&lt;Integer&gt; levelTimes = new ArrayList&lt;Integer&gt;();   </span>
+
+<span class="fc" id="L17">    public static int playerLevel = 1;</span>
+<span class="fc" id="L18">    public static int playerLives = 0;</span>
+<span class="fc" id="L19">    public static String path = null;</span>
+<span class="fc" id="L20">    public static int time = -1;</span>
+
+    // Font
+    public static PFont font;
+
+    // Tile sprites
+    public static PImage emptyTile;
+    public static PImage wallTile;
+    public static PImage brokenTile;
+    public static PImage goalTile;
+
+    // Topbar sprites
+    public static PImage timerSprite;
+    public static PImage livesSprite;
+
+    // Bomb sprites
+<span class="fc" id="L36">    public static List&lt;PImage&gt; bombSprites = new ArrayList&lt;PImage&gt;();</span>
+<span class="fc" id="L37">    public static List&lt;PImage&gt; explosionSprites = new ArrayList&lt;PImage&gt;();</span>
+
+	// Character sprites
+	public static List&lt;PImage&gt; leftPlayerSprites;
+    public static List&lt;PImage&gt; rightPlayerSprites;
+    public static List&lt;PImage&gt; upPlayerSprites;
+    public static List&lt;PImage&gt; downPlayerSprites;
+
+    public static List&lt;PImage&gt; leftRedSprites;
+    public static List&lt;PImage&gt; rightRedSprites;
+    public static List&lt;PImage&gt; upRedSprites;
+    public static List&lt;PImage&gt; downRedSprites;
+
+    public static List&lt;PImage&gt; leftYellowSprites;
+    public static List&lt;PImage&gt; rightYellowSprites;
+    public static List&lt;PImage&gt; upYellowSprites;
+    public static List&lt;PImage&gt; downYellowSprites;
+
+    /**
+    * Resets the map when the player reaches the goal tile and there is still another level to complete.
+    * @param app The PApplet app object
+    * @param map The app's map object
+    * @param timer The app's timer object
+    * @param player The app's player object
+    */
+    public void levelUpReset(PApplet app, Background map, Timer timer, Player player) {
+<span class="fc" id="L63">    	map.changeLevel();</span>
+<span class="fc" id="L64">        map.setReset(false);</span>
+<span class="fc" id="L65">        map.reset();</span>
+<span class="fc" id="L66">        map.setup(app);</span>
+<span class="fc" id="L67">        int newTimeLeft = levelTimes.get(player.getLevel() - 1);</span>
+<span class="fc" id="L68">        timer.setMaxTime(newTimeLeft);</span>
+<span class="fc" id="L69">        timer.setTimeLeft(newTimeLeft);</span>
+<span class="fc" id="L70">    }</span>
+
+    /**
+    * Resets the map to allow for the end screen when the player reaches the goal tile and there are no levels left.
+    * @param app The PApplet app object
+    * @param map The app's map object
+    */
+    public void gameEndedReset(PApplet app, Background map) {
+<span class="fc" id="L78">    	map.setReset(false);</span>
+<span class="fc" id="L79">        map.reset();</span>
+<span class="fc" id="L80">        map.setup(app);</span>
+<span class="fc" id="L81">    }</span>
+
+    /**
+    * Removes enemies that are killed by explosions.&amp;nbsp;Removes bombs that have exploded, and explosions that have been on the map for 0.5 seconds.
+    * @param redEnemies The list of red enemies
+    * @param yellowEnemies The list of yellow enemies
+    * @param bombs The list of bombs
+    * @param explosions The list of explosions
+    */
+    public void handleDangerTicks(List&lt;RedEnemy&gt; redEnemies, List&lt;YellowEnemy&gt; yellowEnemies, List&lt;Bomb&gt; bombs, List&lt;Explosion&gt; explosions) {
+<span class="fc" id="L91">        List&lt;RedEnemy&gt; removeReds = new ArrayList&lt;RedEnemy&gt;();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (RedEnemy enemy : redEnemies) {                </span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">            if (enemy.tick()) {</span>
+<span class="nc" id="L94">                removeReds.add(enemy);</span>
+            }
+<span class="fc" id="L96">        }</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        for (RedEnemy enemy : removeReds) {                </span>
+<span class="nc" id="L98">            redEnemies.remove(redEnemies.indexOf(enemy));</span>
+<span class="nc" id="L99">        }</span>
+
+<span class="fc" id="L101">        List&lt;YellowEnemy&gt; removeYellows = new ArrayList&lt;YellowEnemy&gt;();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (YellowEnemy enemy : yellowEnemies) {                </span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (enemy.tick()) {</span>
+<span class="fc" id="L104">                removeYellows.add(enemy);</span>
+            }
+<span class="fc" id="L106">        }</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (YellowEnemy enemy : removeYellows) {                </span>
+<span class="fc" id="L108">            yellowEnemies.remove(yellowEnemies.indexOf(enemy));</span>
+<span class="fc" id="L109">        }</span>
+
+        //Bombs
+<span class="fc" id="L112">        List&lt;Bomb&gt; explodedBombs = new ArrayList&lt;Bomb&gt;();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (Bomb bomb : bombs) {                </span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (bomb.tick()) {</span>
+<span class="fc" id="L115">                explodedBombs.add(bomb);</span>
+<span class="fc" id="L116">                Explosion newExplosion = new Explosion(bomb.getX(), bomb.getY());</span>
+<span class="fc" id="L117">                explosions.add(newExplosion);</span>
+            }
+<span class="fc" id="L119">        }</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (Bomb bomb : explodedBombs) {                </span>
+<span class="fc" id="L122">            bombs.remove(bombs.indexOf(bomb));</span>
+<span class="fc" id="L123">        }</span>
+
+<span class="fc" id="L125">        List&lt;Explosion&gt; finishedExplosions = new ArrayList&lt;Explosion&gt;();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (Explosion explosion : explosions) {  </span>
+<span class="fc" id="L127">            List&lt;Position&gt; oldPositions = explosion.tick() ;    </span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">            if (oldPositions != null) {</span>
+<span class="fc" id="L129">                finishedExplosions.add(explosion);</span>
+<span class="fc" id="L130">                Background.removeExplosionPosition(explosion.getCentreX(), explosion.getCentreY());</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                for (Position pos : oldPositions) {</span>
+<span class="fc" id="L132">                    Background.removeExplosionPosition(pos.getX(), pos.getY());</span>
+<span class="fc" id="L133">                }</span>
+            }
+<span class="fc" id="L135">        }</span>
+
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        for (Explosion explosion : finishedExplosions) {                </span>
+<span class="fc" id="L138">            explosions.remove(explosions.indexOf(explosion));</span>
+<span class="fc" id="L139">        }</span>
+<span class="fc" id="L140">    }</span>
+
+    /**
+    * Reads the configuration file based on configPath and sets the time and path for the first level.&amp;nbsp;Inserts the data for all the levels into levelPaths and levelTimes.
+    * @param configPath The file path for the configuration JSON file which holds the level data.
+    */
+	public void setLevelInfo(String configPath) {		        
+        try {
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">            if (configPath == null) {</span>
+<span class="nc" id="L149">                configPath = &quot;config.json&quot;;</span>
+            }
+<span class="fc" id="L151">            Reader reader = new FileReader(configPath);</span>
+<span class="fc" id="L152">            JSONObject obj = new JSONObject(reader);</span>
+<span class="fc" id="L153">            String fileContents = obj.toString();</span>
+
+<span class="fc" id="L155">            playerLives = Integer.parseInt(obj.get(&quot;lives&quot;).toString()); </span>
+
+<span class="fc" id="L157">            Object levelsObj = obj.get(&quot;levels&quot;);</span>
+<span class="fc" id="L158">            JSONArray levels = JSONArray.parse(levelsObj.toString());</span>
+
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            for (int i = 0; i &lt; levels.size(); i++) {</span>
+<span class="fc" id="L161">                Object currLevelObj = levels.get(i); </span>
+<span class="fc" id="L162">                JSONObject currLevel = JSONObject.parse(currLevelObj.toString());   </span>
+<span class="fc" id="L163">                String tempPath = currLevel.get(&quot;path&quot;).toString();</span>
+<span class="fc" id="L164">                int tempTime = Integer.parseInt(currLevel.get(&quot;time&quot;).toString()); </span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">                if (levelPaths.size() &lt; levels.size()) {</span>
+<span class="fc" id="L166">                    levelPaths.add(tempPath);</span>
+                }
+<span class="fc bfc" id="L168" title="All 2 branches covered.">                if (levelTimes.size() &lt; levels.size()) {</span>
+<span class="fc" id="L169">                    levelTimes.add(tempTime);</span>
+                }
+<span class="fc bfc" id="L171" title="All 2 branches covered.">                if (i == 0) {       </span>
+<span class="fc" id="L172">                    time = tempTime;       </span>
+<span class="fc" id="L173">                    path = tempPath;                    </span>
+                }
+            }
+            
+
+<span class="nc" id="L178">        } catch(FileNotFoundException e) {            </span>
+<span class="nc" id="L179">            System.out.println(&quot;FileNotFound when setting level info&quot;);</span>
+<span class="fc" id="L180">        }</span>
+<span class="fc" id="L181">    }</span>
+
+    /**
+    * Loads in the font.
+    * @param app The PApplet app object
+    */
+    public void setupFont(PApplet app) {
+<span class="fc" id="L188">        font = app.createFont(&quot;src/main/resources/PressStart2P-Regular.ttf&quot;, 64);</span>
+<span class="fc" id="L189">    }</span>
+
+    /**
+    * Loads in the tile sprites for the map.
+    * @param app The PApplet app object
+    */
+    public void setupMapSprites(PApplet app) {
+<span class="fc" id="L196">        emptyTile = app.loadImage(&quot;src/main/resources/empty/empty.png&quot;);</span>
+<span class="fc" id="L197">        wallTile = app.loadImage(&quot;src/main/resources/wall/solid.png&quot;);</span>
+<span class="fc" id="L198">        brokenTile = app.loadImage(&quot;src/main/resources/broken/broken.png&quot;);</span>
+<span class="fc" id="L199">        goalTile = app.loadImage(&quot;src/main/resources/goal/goal.png&quot;);</span>
+<span class="fc" id="L200">    }</span>
+
+    /**
+    * Loads in the topbar (timer and lives) sprites.
+    * @param app The PApplet app object
+    */
+    public void setupTopbarSprites(PApplet app) {
+<span class="fc" id="L207">        timerSprite = app.loadImage(&quot;src/main/resources/icons/clock.png&quot;);</span>
+<span class="fc" id="L208">        livesSprite = app.loadImage(&quot;src/main/resources/icons/player.png&quot;);</span>
+<span class="fc" id="L209">    }</span>
+
+    /**
+    * Assigns the sprite variables for the player, the red enemies and the yellow enemies.
+    * @param app The PApplet app object
+    */
+    public void setupCharacterSprites(PApplet app) {
+<span class="fc" id="L216">    	leftPlayerSprites = this.loadCharacterSprites(app, &quot;player&quot;, &quot;player&quot;, &quot;left&quot;);</span>
+<span class="fc" id="L217">        rightPlayerSprites = this.loadCharacterSprites(app, &quot;player&quot;, &quot;player&quot;, &quot;right&quot;);</span>
+<span class="fc" id="L218">        upPlayerSprites = this.loadCharacterSprites(app, &quot;player&quot;, &quot;player&quot;, &quot;up&quot;);</span>
+<span class="fc" id="L219">        downPlayerSprites = this.loadCharacterSprites(app, &quot;player&quot;, &quot;player&quot;, &quot;down&quot;);</span>
+        
+<span class="fc" id="L221">        leftRedSprites = this.loadCharacterSprites(app, &quot;red_enemy&quot;, &quot;red&quot;, &quot;left&quot;);</span>
+<span class="fc" id="L222">        rightRedSprites = this.loadCharacterSprites(app, &quot;red_enemy&quot;, &quot;red&quot;, &quot;right&quot;);</span>
+<span class="fc" id="L223">        upRedSprites = this.loadCharacterSprites(app, &quot;red_enemy&quot;, &quot;red&quot;, &quot;up&quot;);</span>
+<span class="fc" id="L224">        downRedSprites = this.loadCharacterSprites(app, &quot;red_enemy&quot;, &quot;red&quot;, &quot;down&quot;);</span>
+        
+<span class="fc" id="L226">        leftYellowSprites = this.loadCharacterSprites(app, &quot;yellow_enemy&quot;, &quot;yellow&quot;, &quot;left&quot;);</span>
+<span class="fc" id="L227">        rightYellowSprites = this.loadCharacterSprites(app, &quot;yellow_enemy&quot;, &quot;yellow&quot;, &quot;right&quot;);</span>
+<span class="fc" id="L228">        upYellowSprites = this.loadCharacterSprites(app, &quot;yellow_enemy&quot;, &quot;yellow&quot;, &quot;up&quot;);</span>
+<span class="fc" id="L229">        downYellowSprites = this.loadCharacterSprites(app, &quot;yellow_enemy&quot;, &quot;yellow&quot;, &quot;down&quot;);</span>
+<span class="fc" id="L230">    }</span>
+
+    /**
+    * Loads in the sprites for either the player, red enemy or yellow enemy
+    * @param app The PApplet app object
+    * @param folderName The name of the folder holding the sprites
+    * @param characterName The type of game character
+    * @param directionName The direction of the sprites
+    * @return List of sprites.
+    */
+    public List&lt;PImage&gt; loadCharacterSprites(PApplet app, String folderName, String characterName, String directionName) {
+<span class="fc" id="L241">        List&lt;PImage&gt; spritesList = new ArrayList&lt;PImage&gt;();</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        for (int i = 1; i &lt;= 4; i++) {</span>
+<span class="fc" id="L243">            String imagePath = String.format(&quot;src/main/resources/%s/%s_%s%s.png&quot;, folderName, characterName, directionName, i);</span>
+<span class="fc" id="L244">            spritesList.add(app.loadImage(imagePath));</span>
+        }        
+<span class="fc" id="L246">        return spritesList;</span>
+    }
+
+    /**
+    * Loads in the bomb sprites.
+    * @param app The PApplet app object
+    */
+    public void setupBombSprites(PApplet app) {
+<span class="fc bfc" id="L254" title="All 2 branches covered.">        if (bombSprites.size() == 0) {</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        	for (int i = 1; i &lt;= 8; i++) {</span>
+<span class="fc" id="L256">                bombSprites.add(app.loadImage(String.format(&quot;src/main/resources/bomb/bomb%s.png&quot;, i)));</span>
+            }
+        }
+<span class="fc" id="L259">    }</span>
+
+    /**
+    * Loads in the explosion sprites.
+    * @param app The PApplet app object
+    */
+    public void setupExplosionSprites(PApplet app) {
+<span class="fc bfc" id="L266" title="All 2 branches covered.">        if (explosionSprites.size() == 0) {</span>
+<span class="fc" id="L267">            List&lt;String&gt; expSpritePositions = Arrays.asList(new String[]{&quot;centre&quot;, &quot;horizontal&quot;, &quot;vertical&quot;, &quot;end_left&quot;, &quot;end_right&quot;, &quot;end_top&quot;, &quot;end_bottom&quot;});</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">            for (int i = 0; i &lt; expSpritePositions.size(); i++) {</span>
+<span class="fc" id="L269">                explosionSprites.add(app.loadImage(String.format(&quot;src/main/resources/explosion/%s.png&quot;, expSpritePositions.get(i))));</span>
+            }
+        }    	
+<span class="fc" id="L272">    }</span>
+    
+    /**
+    * Returns the list of red enemies still alive.
+    * @return The list of the red enemies
+    */
+    public List&lt;RedEnemy&gt; getRedEnemies() {
+<span class="fc" id="L279">    	List&lt;Position&gt; redPositions = Background.getRedPositions();</span>
+<span class="fc" id="L280">        List&lt;RedEnemy&gt; redEnemyList = new ArrayList&lt;RedEnemy&gt;();</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">        for (Position enemyStartPos : redPositions) {                </span>
+<span class="fc" id="L282">            RedEnemy enemy = new RedEnemy(enemyStartPos.getX(), enemyStartPos.getY());</span>
+<span class="fc" id="L283">            redEnemyList.add(enemy);</span>
+<span class="fc" id="L284">        }</span>
+<span class="fc" id="L285">        return redEnemyList;</span>
+    }
+
+    /**
+    * Returns the list of yellow enemies still alive.
+    * @return The list of the yellow enemies
+    */
+    public List&lt;YellowEnemy&gt; getYellowEnemies() {
+<span class="fc" id="L293">    	List&lt;Position&gt; yellowPositions = Background.getYellowPositions();</span>
+<span class="fc" id="L294">        List&lt;YellowEnemy&gt; yellowEnemyList = new ArrayList&lt;YellowEnemy&gt;();</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        for (Position enemyStartPos : yellowPositions) {                </span>
+<span class="fc" id="L296">            YellowEnemy enemy = new YellowEnemy(enemyStartPos.getX(), enemyStartPos.getY());</span>
+<span class="fc" id="L297">            yellowEnemyList.add(enemy);</span>
+<span class="fc" id="L298">        }</span>
+<span class="fc" id="L299">        return yellowEnemyList;</span>
+    }
+
+    /**
+    * Calls the draw function for the player, enemies, bombs and explosions.&amp;nbsp;Objects with a greater y position will be rendered afterwards.
+    * @param app The PApplet app object
+    * @param player The app's player object
+    * @param redEnemies The app's redEnemies list
+    * @param yellowEnemies The app's yellowEnemies list
+    * @param bombs The app's bombs list
+    * @param explosions The app's explosions list
+    */
+    public void handleLayerDrawings(PApplet app, Player player, List&lt;RedEnemy&gt; redEnemies, List&lt;YellowEnemy&gt; yellowEnemies, List&lt;Bomb&gt; bombs, List&lt;Explosion&gt; explosions) {
+<span class="fc" id="L312">    	List&lt;RedEnemy&gt; leftOverReds = new ArrayList&lt;RedEnemy&gt;();</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">            for (RedEnemy enemy : redEnemies) { </span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">                if (enemy.getY() &lt;= player.getY()) {</span>
+<span class="fc" id="L315">                    enemy.draw(app);</span>
+                } else {
+<span class="fc" id="L317">                    leftOverReds.add(enemy);</span>
+                }
+<span class="fc" id="L319">            }</span>
+
+<span class="fc" id="L321">            List&lt;YellowEnemy&gt; leftOverYellows = new ArrayList&lt;YellowEnemy&gt;();</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">            for (YellowEnemy enemy : yellowEnemies) { </span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                if (enemy.getY() &lt;= player.getY()) {</span>
+<span class="fc" id="L324">                    enemy.draw(app);</span>
+                } else {
+<span class="fc" id="L326">                    leftOverYellows.add(enemy);</span>
+                }
+<span class="fc" id="L328">            }</span>
+
+<span class="fc bfc" id="L330" title="All 2 branches covered.">            for (Bomb bomb : bombs) {                </span>
+<span class="fc" id="L331">                bomb.draw(app);</span>
+<span class="fc" id="L332">            }</span>
+
+<span class="fc bfc" id="L334" title="All 2 branches covered.">            for (Explosion explosion : explosions) {                </span>
+<span class="fc" id="L335">                explosion.draw(app);</span>
+<span class="fc" id="L336">            }</span>
+
+<span class="fc" id="L338">            player.draw(app);</span>
+
+<span class="fc bfc" id="L340" title="All 2 branches covered.">            for (RedEnemy enemy : leftOverReds) { </span>
+<span class="fc" id="L341">                enemy.draw(app);</span>
+<span class="fc" id="L342">            }</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">            for (YellowEnemy enemy : leftOverYellows) { </span>
+<span class="fc" id="L344">                enemy.draw(app);</span>
+<span class="fc" id="L345">            }</span>
+<span class="fc" id="L346">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

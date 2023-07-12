@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="demolition.AppTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2021-11-05T07:54:55" hostname="DESKTOP-08SSRQM" time="4.997">
+  <properties/>
+  <testcase name="victoryGameplayTest()" classname="demolition.AppTest" time="1.575"/>
+  <testcase name="timerLossGameplayTest()" classname="demolition.AppTest" time="1.127"/>
+  <testcase name="deathLossGameplayTest()" classname="demolition.AppTest" time="1.267"/>
+  <testcase name="enemyKillTest()" classname="demolition.AppTest" time="1.027"/>
+  <testcase name="windowTest()" classname="demolition.AppTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

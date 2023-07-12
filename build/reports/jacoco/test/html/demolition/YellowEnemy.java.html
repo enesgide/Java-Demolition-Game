@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YellowEnemy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">YellowEnemy.java</span></div><h1>YellowEnemy.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+
+public class YellowEnemy extends GameCharacter{
+
+	/**
+    * Creates a new YellowEnemy object.
+    * @param x X coordinate
+    * @param y Y coordinate
+    */
+<span class="fc" id="L14">	public YellowEnemy(int x, int y) {</span>
+<span class="fc" id="L15">		this.x = x;</span>
+<span class="fc" id="L16">		this.y = y;	</span>
+
+<span class="fc" id="L18">		this.downSprites = Manager.downYellowSprites;</span>
+<span class="fc" id="L19">		this.upSprites = Manager.upYellowSprites;</span>
+<span class="fc" id="L20">		this.leftSprites = Manager.leftYellowSprites;</span>
+<span class="fc" id="L21">		this.rightSprites = Manager.rightYellowSprites;			</span>
+		
+<span class="fc" id="L23">		this.lastFacing = &quot;DOWN&quot;;</span>
+<span class="fc" id="L24">		this.facing = &quot;DOWN&quot;;</span>
+<span class="fc" id="L25">		this.spriteCount = 0;</span>
+<span class="fc" id="L26">	}</span>
+
+	/**
+    * Checks whether the enemy was killed by an explosion.&amp;nbsp;If not, the sprite is updated every 0.2 seconds (12 frames) and the enemy is moved every 1 second (60 frames).
+    * @return If the enemy collides with an explosion, return true.&amp;nbsp;Otherwise, return false.
+    */
+	public boolean tick() {
+
+		// Check death
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (this.checkExplosion()) {</span>
+<span class="fc" id="L36">			Background.removeYellowPosition(this.x, this.y);</span>
+<span class="fc" id="L37">			return true;</span>
+		}
+
+		// Sprites
+<span class="pc bpc" id="L41" title="1 of 4 branches missed.">		if (this.sprite == null &amp;&amp; this.downSprites != null) {</span>
+<span class="fc" id="L42">			this.sprite = this.downSprites.get(0);</span>
+		}
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (frameInterval % 12 == 0) {</span>
+<span class="fc" id="L46">			this.updateSprite();		 			</span>
+		} 
+
+		// Movement
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (frameInterval == 60) {</span>
+<span class="fc" id="L51">			String direction = this.calculateDirection();</span>
+<span class="fc" id="L52">			Background.removeYellowPosition(this.x, this.y);</span>
+<span class="fc" id="L53">			this.move(direction);</span>
+<span class="fc" id="L54">			Background.addYellowPosition(this.x, this.y);</span>
+		}
+
+<span class="fc" id="L57">		this.incrementFrame();</span>
+
+<span class="fc" id="L59">		return false;</span>
+	}
+
+	/**
+    * Draws the sprite to the application window.
+    * @param app PApplet app object.
+    */
+	public void draw(PApplet app) {		
+<span class="fc" id="L67">		app.image(this.sprite, this.x, this.y - 16);</span>
+<span class="fc" id="L68">	}</span>
+
+	/**
+    * Decides on the next available direction for the enemy to move. If the current direction is blocked, it finds the next available direction in a clockwise rotation.
+    * @return If the current path ahead is clear, return the current facing direction.&amp;nbsp;Otherwise, return the next available direction in a clockwise rotation.
+    */
+	public String calculateDirection() {
+<span class="fc" id="L75">		List&lt;String&gt; directions = Arrays.asList(new String[]{&quot;LEFT&quot;, &quot;UP&quot;, &quot;RIGHT&quot;, &quot;DOWN&quot;});</span>
+
+<span class="fc" id="L77">		int i = directions.indexOf(this.getFacing());</span>
+<span class="fc" id="L78">		i --;</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int j = 0; j &lt; 4; j++) {</span>
+<span class="fc" id="L81">			i ++;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			if (i == directions.size()) {</span>
+<span class="fc" id="L83">				i = 0;</span>
+			}
+
+<span class="fc" id="L86">			String nextDirection = directions.get(i);</span>
+
+<span class="fc" id="L88">			Position nextPos = this.getNextPosInDirection(nextDirection);</span>
+<span class="fc" id="L89">			int nextX = nextPos.getX();</span>
+<span class="fc" id="L90">			int nextY = nextPos.getY();</span>
+
+<span class="fc bfc" id="L92" title="All 6 branches covered.">			if (nextX &gt;= 0 &amp;&amp; nextY &gt;= 0 &amp;&amp; !checkCollisions(nextX, nextY)) {</span>
+<span class="fc" id="L93">				this.setLastFacing(this.getFacing());</span>
+<span class="fc" id="L94">				this.setFacing(nextDirection);</span>
+<span class="fc" id="L95">				return nextDirection;</span>
+			}
+		}
+
+<span class="fc" id="L99">		return this.getFacing();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

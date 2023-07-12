@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EndScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">EndScreen.java</span></div><h1>EndScreen.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import processing.core.PApplet;
+import processing.core.PFont;
+
+public class EndScreen{
+
+	private boolean victory;	
+	private boolean loss;
+	private PFont font;
+
+	/**
+    * Creates a new EndScreen object.
+    */
+<span class="fc" id="L16">	public EndScreen() {</span>
+<span class="fc" id="L17">		this.victory = false;</span>
+<span class="fc" id="L18">		this.loss = false;</span>
+<span class="fc" id="L19">		this.font = Manager.font;	</span>
+<span class="fc" id="L20">	}</span>
+
+	/**
+    * Draws the orange end screen and writes the victory/loss text in the middle.
+    * @param app PApplet app object.
+    */
+	public void draw(PApplet app) {		
+<span class="fc" id="L27">		int fontSize = 24;</span>
+<span class="fc" id="L28">		app.textFont(this.font);</span>
+<span class="fc" id="L29">		app.textSize(fontSize);</span>
+<span class="fc" id="L30">		app.fill(0, 0, 0);</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		if (this.getVictory()) {</span>
+<span class="fc" id="L32">			app.text(&quot;YOU WIN&quot;, 155, 252);</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		} else if (this.getLoss()) {</span>
+<span class="fc" id="L34">			app.text(&quot;GAME OVER&quot;, 135, 252);</span>
+		}
+<span class="fc" id="L36">	}</span>
+
+	/**
+    * Sets the victory value to the value of status.
+    * @param status New value of victory.
+    */
+	public void setVictory(boolean status) {
+<span class="fc" id="L43">		this.victory = status;</span>
+<span class="fc" id="L44">	}</span>
+
+	/**
+    * Gets the value of the victory attribute.
+    * @return The value of victory.
+    */
+	public boolean getVictory() {
+<span class="fc" id="L51">		return this.victory;</span>
+	}
+
+	/**
+    * Sets the loss value to the value of status.
+    * @param status New value of loss.
+    */
+	public void setLoss(boolean status) {
+<span class="fc" id="L59">		this.loss = status;</span>
+<span class="fc" id="L60">	}</span>
+
+	/**
+    * Gets the value of the loss attribute.
+    * @return The value of loss.
+    */
+	public boolean getLoss() {
+<span class="fc" id="L67">		return this.loss;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="demolition.YellowEnemyTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2021-11-05T07:55:06" hostname="DESKTOP-08SSRQM" time="0.003">
+  <properties/>
+  <testcase name="positionTest()" classname="demolition.YellowEnemyTest" time="0.0"/>
+  <testcase name="calculateDirectionTest()" classname="demolition.YellowEnemyTest" time="0.001"/>
+  <testcase name="tickTest()" classname="demolition.YellowEnemyTest" time="0.001"/>
+  <testcase name="calculateDirectionOutOfMapTest()" classname="demolition.YellowEnemyTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

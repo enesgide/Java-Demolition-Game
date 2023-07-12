@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+
+public class Player extends GameCharacter{
+
+	private int level;	 
+	private int lives;
+
+	/**
+    * Creates a new Lives object.
+    * @param x X coordinate
+    * @param y Y coordinate
+    * @param level Current level
+    * @param lives Number of lives
+    */
+<span class="fc" id="L19">	public Player(int x, int y, int level, int lives) {</span>
+<span class="fc" id="L20">		this.level = level;</span>
+<span class="fc" id="L21">		this.lives = lives;</span>
+<span class="fc" id="L22">		this.x = x;</span>
+<span class="fc" id="L23">		this.y = y;	</span>
+
+<span class="fc" id="L25">		this.downSprites = Manager.downPlayerSprites;</span>
+<span class="fc" id="L26">		this.upSprites = Manager.upPlayerSprites;</span>
+<span class="fc" id="L27">		this.leftSprites = Manager.leftPlayerSprites;</span>
+<span class="fc" id="L28">		this.rightSprites = Manager.rightPlayerSprites;			</span>
+		
+<span class="fc" id="L30">		this.lastFacing = &quot;DOWN&quot;;</span>
+<span class="fc" id="L31">		this.facing = &quot;DOWN&quot;;</span>
+<span class="fc" id="L32">		this.spriteCount = 0;</span>
+<span class="fc" id="L33">	}</span>
+
+	/**
+    * Creates a new Lives object.
+    * @param map The map object
+    * @param timer The timer object
+    * @return If the player collides with an explosion or enemy, return the value of kill().&amp;nbsp;If the player has reached the goal, return true.&amp;nbsp;Otherwise, return false.
+    */
+	public boolean tick(Background map, Timer timer) {
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (frameInterval == 12) {</span>
+<span class="fc" id="L43">			this.updateSprite();</span>
+<span class="fc" id="L44">			frameInterval = 1;		</span>
+		} else {
+<span class="fc" id="L46">			frameInterval ++;</span>
+		}
+
+<span class="pc bpc" id="L49" title="1 of 4 branches missed.">		if (this.sprite == null &amp;&amp; this.downSprites != null) {</span>
+<span class="fc" id="L50">			this.sprite = this.downSprites.get(0);</span>
+		}
+
+<span class="fc bfc" id="L53" title="All 4 branches covered.">		if (this.checkExplosion() || this.checkEnemy()) {			</span>
+<span class="fc" id="L54">			return this.kill(map, timer);</span>
+		}
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (this.checkGoalReached()) {</span>
+<span class="fc" id="L58">			return true;</span>
+		}
+
+<span class="fc" id="L61">		return false;</span>
+	}
+
+	/**
+    * Draws the sprite to the application window.
+    * @param app PApplet app object.
+    */
+	public void draw(PApplet app) {	
+<span class="fc" id="L69">		app.image(this.sprite, this.x, this.y - 16);</span>
+<span class="fc" id="L70">	}</span>
+
+	/**
+    * Sets the value of level to newLevel.
+    * @param newLevel New value of level
+    */
+	public void setLevel(int newLevel) {
+<span class="fc" id="L77">		this.level = newLevel;</span>
+<span class="fc" id="L78">	}</span>
+
+	/**
+    * Returns the value of level.
+    * @return The value of level.
+    */
+	public int getLevel() {
+<span class="fc" id="L85">		return this.level;</span>
+	}
+
+	/**
+    * Sets the value of lives to newLives.
+    * @param newLives New value of lives
+    */
+	public void setLives(int newLives) {
+<span class="fc" id="L93">		this.lives = newLives;</span>
+<span class="fc" id="L94">	}</span>
+
+	/**
+    * Returns the value of lives.
+    * @return The value of lives.
+    */
+	public int getLives() {
+<span class="fc" id="L101">		return this.lives;</span>
+	}
+
+	/**
+    * Changes the attributes of the player to their default values.
+    */
+	public void reset() {
+<span class="fc" id="L108">		this.x = Background.plrStartPos.getX();</span>
+<span class="fc" id="L109">        this.y = Background.plrStartPos.getY();</span>
+<span class="fc" id="L110">        this.facing = &quot;DOWN&quot;;</span>
+<span class="fc" id="L111">        this.lastFacing = &quot;DOWN&quot;;</span>
+<span class="fc" id="L112">        this.spriteCount = 0;</span>
+<span class="fc" id="L113">	}</span>
+
+	/**
+    * Removes 1 life from the player and returns true if they have 0 lives left, otherwise returns false.
+    * @param map The map object
+    * @param timer The timer object
+    * @return Return true if the player has 0 lives, otherwise return false.
+    */
+	public boolean kill(Background map, Timer timer) {
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (this.lives &gt; 0) {</span>
+<span class="fc" id="L123">			map.setReset(true);</span>
+<span class="fc" id="L124">			this.lives --;</span>
+<span class="fc" id="L125">			timer.setTimeLeft(timer.getMaxTime());</span>
+<span class="fc" id="L126">			return false;</span>
+		} else {
+<span class="fc" id="L128">			return true;</span>
+		}
+	}
+
+	/**
+    * Checks whether there are any enemies in the same position as the player.
+    * @return Return true if an enemy if found, otherwise return false.
+    */
+	public boolean checkEnemy() {
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		for (Position enemyPos : Background.getRedPositions()) {</span>
+<span class="fc bfc" id="L138" title="All 4 branches covered.">			if (enemyPos.getX() == this.x &amp;&amp; enemyPos.getY() == this.y) {</span>
+<span class="fc" id="L139">				return true;</span>
+			}
+<span class="fc" id="L141">		}</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		for (Position enemyPos : Background.getYellowPositions()) {</span>
+<span class="fc bfc" id="L143" title="All 4 branches covered.">			if (enemyPos.getX() == this.x &amp;&amp; enemyPos.getY() == this.y) {</span>
+<span class="fc" id="L144">				return true;</span>
+			}
+<span class="fc" id="L146">		}</span>
+<span class="fc" id="L147">		return false;</span>
+	}
+
+	/**
+    * Checks whether the player is in the same position as the goal position.
+    * @return Return true if the goal is reached, otherwise return false.
+    */
+	public boolean checkGoalReached() {
+<span class="fc" id="L155">		Position goalPos = Background.getGoalPosition();</span>
+<span class="fc bfc" id="L156" title="All 6 branches covered.">		if (this.lives &gt; 0 &amp;&amp; this.x == goalPos.getX() &amp;&amp; this.y == goalPos.getY()) {</span>
+<span class="fc" id="L157">			this.level ++;</span>
+<span class="fc" id="L158">			return true;</span>
+		}
+
+<span class="fc" id="L161">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

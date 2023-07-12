@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Timer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Timer.java</span></div><h1>Timer.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.core.PFont;
+
+public class Timer extends Topbar{	
+
+	private int maxTime;
+	private int timeLeft;
+
+	/**
+    * Creates a new Timer object.
+    * @param maxTime The maximum time for each round.
+    * @param imgX X coordinate for the sprite
+    * @param imgY Y coordinate for the sprite
+    * @param msgX X coordinate for the message text
+    * @param msgY Y coordinate for the message text
+    */
+<span class="fc" id="L20">	public Timer(int maxTime, int imgX, int imgY, int msgX, int msgY) {	</span>
+<span class="fc" id="L21">		this.maxTime = maxTime;</span>
+<span class="fc" id="L22">		this.timeLeft = maxTime;</span>
+<span class="fc" id="L23">		this.message = Integer.toString(maxTime);</span>
+<span class="fc" id="L24">		this.font = Manager.font;</span>
+<span class="fc" id="L25">		this.sprite = Manager.timerSprite;	</span>
+<span class="fc" id="L26">		this.imgX = imgX;</span>
+<span class="fc" id="L27">		this.imgY = imgY;	</span>
+<span class="fc" id="L28">		this.msgX = msgX;</span>
+<span class="fc" id="L29">		this.msgY = msgY;		</span>
+<span class="fc" id="L30">	}</span>
+
+	/**
+    * Decrements timeLeft every second (60 frames) and returns true if the time left is 0.&amp;nbsp;Otherwise, return false.
+    * @return If the time remaining is 0, return true.&amp;nbsp;Otherwise, return false.
+    */
+	public boolean tick() {		
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (frameInterval == 60) {</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">			if (this.getTimeLeft() &gt; 0) {</span>
+<span class="fc" id="L39">				this.setTimeLeft(this.getTimeLeft() - 1);			</span>
+			} else {
+<span class="fc" id="L41">				return true;</span>
+			}
+		}
+
+<span class="fc" id="L45">		this.incrementFrame();</span>
+
+<span class="fc" id="L47">		return false;	</span>
+	}
+
+	/**
+    * Sets the value of maxTime.
+    * @param maxTime Maximum time for thr round
+    */
+	public void setMaxTime(int maxTime) {
+<span class="fc" id="L55">		this.maxTime = maxTime;</span>
+<span class="fc" id="L56">	}</span>
+
+	/**
+    * Gets the value of maxTime.
+    * @return The value of maxTime.
+    */
+	public int getMaxTime() {
+<span class="fc" id="L63">		return this.maxTime;</span>
+	}
+
+	/**
+    * Sets the value of timeLeft and updates the message to be the string value of timeLeft.
+    * @param timeLeft Time remaining in the round
+    */
+	public void setTimeLeft(int timeLeft) {
+<span class="fc" id="L71">		this.timeLeft = timeLeft;</span>
+<span class="fc" id="L72">		this.message = Integer.toString(timeLeft);</span>
+<span class="fc" id="L73">	}</span>
+
+	/**
+    * Gets the value of timeLeft.
+    * @return The value of timeleft.
+    */
+	public int getTimeLeft() {
+<span class="fc" id="L80">		return this.timeLeft;</span>
+	}
+
+	/**
+    * Increments frameInterval, or sets it to 1 if it reaches 60.
+    * @return The value of frameInterval.
+    */
+	public int incrementFrame() {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (frameInterval == 60) {</span>
+<span class="fc" id="L89">			frameInterval = 1;		</span>
+		} else {
+<span class="fc" id="L91">			frameInterval ++;</span>
+		}
+<span class="fc" id="L93">		return frameInterval;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
